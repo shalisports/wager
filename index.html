@@ -641,45 +641,27 @@ main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:1.5rem;d
 
 
 <!-- LINE ADJUSTER MODAL -->
-<div id="lineModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:600;align-items:flex-end;justify-content:center;padding:0 0 0 0;">
+<div id="lineModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:600;align-items:flex-end;justify-content:center;padding:0;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;margin:0 auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <div style="font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:2px;color:var(--gold);">Adjust Line</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+      <div style="font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:2px;color:var(--gold);">Add to Slip</div>
       <button onclick="closeLineModal()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
     </div>
     <div style="text-align:center;margin-bottom:1.2rem;">
-      <div id="lm-player" style="font-size:.85rem;font-weight:600;margin-bottom:4px;"></div>
+      <div id="lm-player" style="font-size:.9rem;font-weight:600;margin-bottom:4px;"></div>
       <div id="lm-direction" style="font-family:'Space Mono';font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;"></div>
     </div>
-    <!-- Line display -->
-    <div style="text-align:center;margin-bottom:1.2rem;">
-      <div style="font-family:'Bebas Neue';font-size:3.5rem;line-height:1;color:var(--text);" id="lm-line-display">—</div>
-      <div style="font-family:'Space Mono';font-size:.6rem;color:var(--muted);text-transform:uppercase;">Points Line</div>
-    </div>
-    <!-- Slider -->
-    <div style="margin-bottom:1rem;padding:0 4px;">
-      <input type="range" id="lm-slider" min="0" max="100" step="1" oninput="onSliderMove()"
-        style="width:100%;accent-color:var(--gold);cursor:pointer;height:6px;">
-      <div style="display:flex;justify-content:space-between;font-family:'Space Mono';font-size:.58rem;color:var(--muted);margin-top:4px;">
-        <span id="lm-min-label"></span>
-        <span style="color:var(--gold);">← move to adjust →</span>
-        <span id="lm-max-label"></span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.4rem;">
+      <div style="background:var(--surface);border:1px solid rgba(0,214,143,.3);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-family:'Space Mono';font-size:.6rem;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Line</div>
+        <div style="font-family:'Bebas Neue';font-size:2rem;line-height:1;" id="lm-line-display">—</div>
+        <div style="font-family:'Space Mono';font-size:.55rem;color:var(--muted);">pts</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-family:'Space Mono';font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Odds</div>
+        <div style="font-family:'Space Mono';font-size:2rem;font-weight:700;line-height:1;" id="lm-odds-display">—</div>
       </div>
     </div>
-    <!-- Odds display -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;">
-      <div style="background:var(--surface);border:1px solid rgba(0,214,143,.3);border-radius:10px;padding:12px;text-align:center;">
-        <div style="font-family:'Space Mono';font-size:.62rem;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Over</div>
-        <div style="font-family:'Space Mono';font-size:1.1rem;font-weight:700;" id="lm-over-odds">—</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid rgba(255,71,87,.3);border-radius:10px;padding:12px;text-align:center;">
-        <div style="font-family:'Space Mono';font-size:.62rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Under</div>
-        <div style="font-family:'Space Mono';font-size:1.1rem;font-weight:700;" id="lm-under-odds">—</div>
-      </div>
-    </div>
-    <!-- Value indicator -->
-    <div id="lm-value-bar" style="text-align:center;font-family:'Space Mono';font-size:.65rem;margin-bottom:1rem;padding:6px;border-radius:6px;"></div>
-    <!-- Confirm button -->
     <button onclick="confirmLineAdjust()" style="width:100%;background:var(--gold);color:#000;border:none;border-radius:9px;padding:13px;font-family:'Bebas Neue';font-size:1.15rem;letter-spacing:2px;cursor:pointer;transition:all .2s;" id="lm-confirm-btn">Add to Slip →</button>
   </div>
 </div>
@@ -1172,7 +1154,9 @@ function renderGames(){
     const spA=o.spread===0?'PK':(o.spread<0?`${o.spread}`:`+${o.spread}`);
     const spB=o.spread===0?'PK':(o.spread>0?`-${o.spread}`:`+${Math.abs(o.spread)}`);
     const gameLocked=isGameLocked(currentRound,i);
-    const addCall=(id,label,odds,oppLabel,oppOdds)=>gameLocked?`showToast('Betting closed for this game',true)`:`addToBetSlip('${id}','${safe(label)}',${odds},'${safe(oppLabel)}',${oppOdds})`;
+    const userPlayer=getUserPlayerName();
+    const userInGame=userPlayer&&ALL_PLAYERS.some(p=>p.name===userPlayer&&(p.team===t1||p.team===t2));
+    const addCall=(id,label,odds,oppLabel,oppOdds)=>gameLocked?`showToast('🔒 Betting closed for this game',true)`:userInGame?`showToast("🚫 You can't bet on your own game",true)`:`addToBetSlip('${id}','${safe(label)}',${odds},'${safe(oppLabel)}',${oppOdds})`;
     return `
     <div class="game-card">
       <div class="game-meta"><span class="game-round-lbl">Round ${currentRound}</span><span>3-on-3 · To 17 · Win by 2 · Dead 21</span></div>
@@ -2485,123 +2469,72 @@ function renderPPG(){
 }
 
 // ══════════════════════════════════════════════════════
-//  LINE ADJUSTER MODAL
+//  BET MODAL (simple — no line adjustment)
 // ══════════════════════════════════════════════════════
-let lmState = {}; // stores current modal context
+let lmState = {};
+
+function getUserPlayerName(){
+  // Returns the player name that matches the current user's account name, or null
+  if(!currentUser) return null;
+  const acctName=(currentUser.name||'').toLowerCase().trim();
+  const match=ALL_PLAYERS.find(p=>p.name.toLowerCase().trim()===acctName);
+  return match?match.name:null;
+}
 
 function openLineModal(playerName, teamName, opponentTeam, baseLine, baseOverOdds, baseUnderOdds, direction, pfxOv, pfxUn){
-  // direction: 'over' or 'under' — which side the user clicked
-
-  // Guard: check if player's game is locked
+  // Guard: game locked
   const rd2=SCHEDULE[currentRound-1];
   const gameIdx=rd2?rd2.games.findIndex(g=>g[0]===teamName||g[1]===teamName):-1;
   if(gameIdx>=0 && isGameLocked(currentRound,gameIdx)){
-    showToast('🔒 Betting is closed for this game',true);
-    return;
+    showToast('🔒 Betting is closed for this game',true); return;
   }
   const approvedPts=getApprovedPlayerPts(playerName,currentRound);
   if(approvedPts!==null){showToast('🔒 Score already approved',true);return;}
 
-  lmState = {playerName,teamName,opponentTeam,baseLine,baseOverOdds,baseUnderOdds,direction,pfxOv,pfxUn};
+  // Guard: self-bet — block if user's player name is in this game
+  const userPlayer=getUserPlayerName();
+  if(userPlayer){
+    const game=rd2&&gameIdx>=0?rd2.games[gameIdx]:null;
+    if(game){
+      const playersInGame=ALL_PLAYERS.filter(p=>p.team===game[0]||p.team===game[1]).map(p=>p.name.toLowerCase());
+      if(playersInGame.includes(userPlayer.toLowerCase())){
+        showToast("🚫 You can't bet on your own game",true); return;
+      }
+    }
+  }
 
-  // Slider range: ±3 in 0.5 steps = 13 positions (index 0..12, center=6)
-  const step=0.5, range=3, steps=range/step; // 6 steps each side, 13 total
-  const totalSteps=steps*2;
-  lmState.step=step; lmState.range=range; lmState.totalSteps=totalSteps;
-  lmState.centerIdx=steps;
+  lmState={playerName,teamName,opponentTeam,baseLine,baseOverOdds,baseUnderOdds,direction,pfxOv,pfxUn};
+  lmState.adjLine=baseLine;
+  lmState.adjOverOdds=baseOverOdds;
+  lmState.adjUnderOdds=baseUnderOdds;
 
+  const myOdds=direction==='over'?baseOverOdds:baseUnderOdds;
   document.getElementById('lm-player').textContent=playerName;
   document.getElementById('lm-direction').textContent=direction.toUpperCase()+' — '+teamName.split(' ').slice(-1)[0];
-  document.getElementById('lm-min-label').textContent=(baseLine-range).toFixed(1);
-  document.getElementById('lm-max-label').textContent=(baseLine+range).toFixed(1);
-
-  const slider=document.getElementById('lm-slider');
-  slider.min=0; slider.max=totalSteps; slider.step=1; slider.value=steps; // center
-
-  updateLineModalDisplay(steps);
+  document.getElementById('lm-line-display').textContent=baseLine.toFixed(1);
+  document.getElementById('lm-odds-display').textContent=oddsStr(myOdds);
+  document.getElementById('lm-odds-display').style.color=myOdds>0?'var(--green)':'var(--red)';
+  document.getElementById('lm-confirm-btn').textContent=`Add ${direction.toUpperCase()} ${baseLine} (${oddsStr(myOdds)}) →`;
 
   const modal=document.getElementById('lineModal');
   modal.style.display='flex';
-  setTimeout(()=>modal.querySelector('div').style.transform='translateY(0)',10);
 }
 
 function closeLineModal(){
   document.getElementById('lineModal').style.display='none';
 }
 
-function onSliderMove(){
-  const val=parseInt(document.getElementById('lm-slider').value);
-  updateLineModalDisplay(val);
-}
-
-function updateLineModalDisplay(sliderVal){
-  const {baseLine,step,totalSteps,centerIdx,baseOverOdds,baseUnderOdds,direction}=lmState;
-  const offset=(sliderVal-centerIdx)*step; // positive = line moved UP, negative = line moved DOWN
-  const adjLine=Math.max(0.5, Math.round((baseLine+offset)*2)/2);
-  lmState.adjLine=adjLine;
-
-  document.getElementById('lm-line-display').textContent=adjLine.toFixed(1);
-
-  // Core probability logic — line movement affects true win probability:
-  //   Line goes UP   → OVER is harder to hit → over prob drops, under prob rises
-  //   Line goes DOWN → OVER is easier to hit → over prob rises, under prob drops
-  // Each 0.5 point shift moves probability ~5%
-  const vigHalf=VIG/2;
-  function fromAmerican(o){ return o<0? Math.abs(o)/(Math.abs(o)+100) : 100/(o+100); }
-  const baseOverP=fromAmerican(baseOverOdds)-vigHalf;
-
-  // offset > 0 means line went up → over is harder → subtract from over probability
-  const adjOverP=Math.min(0.88, Math.max(0.12, baseOverP - offset*0.06));
-  const adjUnderP=1-adjOverP;
-
-  const adjOverOdds=toAmerican(adjOverP+vigHalf);
-  const adjUnderOdds=toAmerican(adjUnderP+vigHalf);
-  lmState.adjOverOdds=adjOverOdds;
-  lmState.adjUnderOdds=adjUnderOdds;
-
-  document.getElementById('lm-over-odds').textContent=oddsStr(adjOverOdds);
-  document.getElementById('lm-over-odds').style.color=adjOverOdds<0?'var(--red)':'var(--green)';
-  document.getElementById('lm-under-odds').textContent=oddsStr(adjUnderOdds);
-  document.getElementById('lm-under-odds').style.color=adjUnderOdds<0?'var(--red)':'var(--green)';
-
-  // Value bar — describe what moving the line does for the user's chosen side
-  const bar=document.getElementById('lm-value-bar');
-  const myOdds=direction==='over'?adjOverOdds:adjUnderOdds;
-  const baseMyOdds=direction==='over'?baseOverOdds:baseUnderOdds;
-  if(Math.abs(offset)<0.01){
-    bar.textContent='Standard line — adjust slider to change odds'; 
-    bar.style.background='rgba(96,96,160,.1)'; bar.style.color='var(--muted)';
-  } else if(myOdds > baseMyOdds){
-    // Higher (more positive) american odds = bigger payout = less likely = harder for user
-    const label=direction==='over'
-      ? `↑ Raised line — Over harder to hit, but pays more`
-      : `↓ Lowered line — Under harder to hit, but pays more`;
-    bar.textContent=label;
-    bar.style.background='rgba(255,71,87,.08)'; bar.style.color='var(--red)';
-  } else {
-    // Lower american odds = easier for user = worse payout
-    const label=direction==='over'
-      ? `↓ Lowered line — Over easier to hit, but pays less`
-      : `↑ Raised line — Under easier to hit, but pays less`;
-    bar.textContent=label;
-    bar.style.background='rgba(0,214,143,.08)'; bar.style.color='var(--green)';
-  }
-
-  // Update confirm button
-  document.getElementById('lm-confirm-btn').textContent=`Add ${direction.toUpperCase()} ${adjLine} (${oddsStr(myOdds)}) →`;
-}
-
 function confirmLineAdjust(){
   const {adjLine,adjOverOdds,adjUnderOdds,direction,playerName,pfxOv,pfxUn}=lmState;
-  const safe=s=>s.replace(/'/g,"\'");
   if(direction==='over'){
-    addToBetSlip(pfxOv+'_adj',`O${adjLine} Pts — ${playerName}`,adjOverOdds,`U${adjLine} Pts — ${playerName}`,adjUnderOdds);
+    addToBetSlip(pfxOv,`O${adjLine} Pts — ${playerName}`,adjOverOdds,`U${adjLine} Pts — ${playerName}`,adjUnderOdds);
   } else {
-    addToBetSlip(pfxUn+'_adj',`U${adjLine} Pts — ${playerName}`,adjUnderOdds,`O${adjLine} Pts — ${playerName}`,adjOverOdds);
+    addToBetSlip(pfxUn,`U${adjLine} Pts — ${playerName}`,adjUnderOdds,`O${adjLine} Pts — ${playerName}`,adjOverOdds);
   }
   closeLineModal();
-  showToast(`Added ${direction} ${adjLine} for ${playerName}`);
+  showToast(`Added ${direction.toUpperCase()} ${adjLine} for ${playerName}`);
 }
+
 
 
 // ══════════════════════════════════════════════════════
