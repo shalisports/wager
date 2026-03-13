@@ -398,7 +398,7 @@ main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:1.5rem;d
   </div>
 
   <div class="panel" id="panel-standings">
-    <div class="section-title">Standings <span class="tag">2025</span></div>
+    <div class="section-title">Standings</div>
     <div class="game-card" style="padding:0;overflow:hidden;margin-bottom:1rem;">
       <table class="standings-table">
         <thead><tr><th>#</th><th>Team</th><th>Coach</th><th>PWR</th><th>W</th><th>L</th><th>SOS</th></tr></thead>
@@ -1820,7 +1820,7 @@ function switchTab(tab, el){
   if(tab==='mvp') renderMVP();
   if(tab==='leaderboard') renderLeaderboard();
   if(tab==='rosters') renderRosters();
-  if(tab==='standings'){renderStandings();renderSOS();}
+  if(tab==='standings') renderStandings();
   if(tab==='results'){populateResultsForm();if(isAdmin(currentUser?.email)){renderAdminPending();renderPowerRankEditor();renderPropLineEditor();renderAdminList();}}
 }
 
